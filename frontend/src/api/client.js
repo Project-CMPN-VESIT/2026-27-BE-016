@@ -1,0 +1,318 @@
+import axios from 'axios';
+import { auth } from '@/lib/firebase';
+
+const SERVER_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+const API_ROOT = `${SERVER_URL.replace(/\/+$/, '').replace(/\/api$/i, '')}/api`;
+
+export const apiClient = axios.create({
+  baseURL: API_ROOT,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+apiClient.interceptors.request.use(async (config) => {
+  const firebaseUser = auth?.currentUser;
+  if (!firebaseUser) {
+    throw new Error('You must be signed in to access this service.');
+  }
+
+  const token = await firebaseUser.getIdToken();
+  config.headers.set('Authorization', `Bearer ${token}`);
+  return config;
+});
+
+export const getLearningModules = async ({ signal } = {}) => {
+  const response = await apiClient.get('/learning-modules', { signal });
+  return response.data;
+};
+
+export const getLearningProgress = async ({ signal } = {}) => {
+  const response = await apiClient.get('/learning-progress', { signal });
+  return response.data;
+};
+
+export const saveLearningProgress = async (progress, { signal } = {}) => {
+  const response = await apiClient.put('/learning-progress', progress, { signal });
+  return response.data;
+};
+
+// Pricing Calculator APIs
+export const calculateAPIGatewayCost = async (params) => {
+  const response = await apiClient.post('/api-gateway/calculate', params);
+  return response.data;
+};
+
+export const calculateLambdaCost = async (params) => {
+  const response = await apiClient.post('/lambda/calculate', params);
+  return response.data;
+};
+
+export const calculateS3Cost = async (params) => {
+  const response = await apiClient.post('/s3/calculate', params);
+  return response.data;
+};
+
+export const calculateCognitoCost = async (params) => {
+  const response = await apiClient.post('/cognito/calculate', params);
+  return response.data;
+};
+
+export const calculateDynamoDBCost = async (params) => {
+  const response = await apiClient.post('/dynamodb/calculate', params);
+  return response.data;
+};
+
+export const getDynamoDBRegions = async () => {
+  const response = await apiClient.get('/dynamodb/regions');
+  return response.data;
+};
+
+export const calculateELBCost = async (params) => {
+  const response = await apiClient.post('/elb/calculate', params);
+  return response.data;
+};
+
+export const getELBRegions = async () => {
+  const response = await apiClient.get('/elb/regions');
+  return response.data;
+};
+
+export const getELBTypes = async () => {
+  const response = await apiClient.get('/elb/lb-types');
+  return response.data;
+};
+
+export const calculateElasticBeanstalkCost = async (params) => {
+  const response = await apiClient.post('/elastic-beanstalk/calculate', params);
+  return response.data;
+};
+
+export const getInstanceTypes = async (region) => {
+  const response = await apiClient.get(`/elastic-beanstalk/instance-types?region=${region}`);
+  return response.data;
+};
+
+// Architecture APIs
+export const saveArchitecture = async (architecture) => {
+  try {
+    const response = await apiClient.post('/architecture', architecture);
+    return response.data;
+  } catch (error) {
+    console.error('Error saving architecture:', error);
+    throw error;
+  }
+};
+
+export const getArchitectures = async () => {
+  try {
+    const response = await apiClient.get('/architecture');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching architectures:', error);
+    return [];
+  }
+};
+
+export const createArchitectureDocument = async (document) => {
+  const response = await apiClient.post('/architecture-documents', document);
+  return response.data;
+};
+
+export const getArchitectureDocuments = async () => {
+  const response = await apiClient.get('/architecture-documents');
+  return response.data;
+};
+
+export const getArchitectureDocument = async (documentId) => {
+  const response = await apiClient.get(`/architecture-documents/${documentId}`);
+  return response.data;
+};
+
+export const updateArchitectureDocument = async (documentId, document) => {
+  const response = await apiClient.put(`/architecture-documents/${documentId}`, document);
+  return response.data;
+};
+
+export const deleteArchitectureDocument = async (documentId) => {
+  const response = await apiClient.delete(`/architecture-documents/${documentId}`);
+  return response.data;
+};
+
+export const createCalculationSnapshot = async (documentId, snapshot) => {
+  const response = await apiClient.post(
+    `/architecture-documents/${documentId}/snapshots`,
+    snapshot
+  );
+  return response.data;
+};
+
+export const simulateArchitecture = async (architecture) => {
+  try {
+    const response = await apiClient.post('/architecture/calculate', architecture);
+    return response.data;
+  } catch (error) {
+    console.error('Error simulating architecture:', error);
+    throw error;
+  }
+};
+
+// Module 1 AI assistant API (kept separate from the Playground chatbot).
+export const chatWithArchitectureAssistant = async (message) => {
+  const response = await apiClient.post('/ai/chat', { message });
+  return response.data;
+};
+
+// Module 9 Mermaid diagram API. The backend validates the architecture first.
+export const generateArchitectureDiagram = async (architecture) => {
+  const response = await apiClient.post('/ai/architecture/diagram', { architecture });
+  return response.data;
+};
+
+export const calculateCloudWatchCost = async (params) => {
+  const response = await apiClient.post('/cloudwatch/calculate', params);
+  return response.data;
+};
+
+export const getCloudWatchRegions = async () => {
+  const response = await apiClient.get('/cloudwatch/regions');
+  return response.data;
+};
+
+export const calculateCloudFrontCost = async (params) => {
+  const response = await apiClient.post('/cloudfront/calculate', params);
+  return response.data;
+};
+
+export const getCloudFrontRegions = async () => {
+  const response = await apiClient.get('/cloudfront/regions');
+  return response.data;
+};
+
+export const calculateElastiCacheCost = async (params) => {
+  const response = await apiClient.post('/elasticache/calculate', params);
+  return response.data;
+};
+
+export const getElastiCacheRegions = async () => {
+  const response = await apiClient.get('/elasticache/regions');
+  return response.data;
+};
+
+export const calculateSQSCost = async (params) => {
+  const response = await apiClient.post('/sqs/calculate', params);
+  return response.data;
+};
+
+export const getSQSRegions = async () => {
+  const response = await apiClient.get('/sqs/regions');
+  return response.data;
+};
+
+export const calculateEC2Cost = async (params) => {
+  const response = await apiClient.post('/ec2/calculate', params);
+  return response.data;
+};
+
+export const getEC2InstanceTypes = async (region) => {
+  const response = await apiClient.get('/ec2/instance-types', { params: { region } });
+  return response.data;
+};
+
+export const calculateRDSCost = async (params) => {
+  const response = await apiClient.post('/rds/calculate', params);
+  return response.data;
+};
+
+export const getRDSInstanceTypes = async (region, engine, deployment) => {
+  const response = await apiClient.get('/rds/instance-types', {
+    params: { region, engine, deployment },
+  });
+  return response.data;
+};
+
+// ============================================================
+// AI ARCHITECT ASSISTANT APIS (Conversations & Architecture Generation)
+// ============================================================
+
+export const getAIConversations = async () => {
+  const response = await apiClient.get('/ai-architect/conversations');
+  return response.data;
+};
+
+export const createAIConversation = async (title = 'New Architecture Chat') => {
+  const response = await apiClient.post('/ai-architect/conversations', { title });
+  return response.data;
+};
+
+export const getAIConversation = async (convId) => {
+  const response = await apiClient.get(`/ai-architect/conversations/${convId}`);
+  return response.data;
+};
+
+export const updateAIConversationTitle = async (convId, title) => {
+  const response = await apiClient.patch(`/ai-architect/conversations/${convId}`, { title });
+  return response.data;
+};
+
+export const deleteAIConversation = async (convId) => {
+  const response = await apiClient.delete(`/ai-architect/conversations/${convId}`);
+  return response.data;
+};
+
+export const sendAIMessage = async (convId, message) => {
+  const response = await apiClient.post(`/ai-architect/conversations/${convId}/messages`, { message });
+  return response.data;
+};
+
+export const editAIMessage = async (convId, messageId, message) => {
+  const response = await apiClient.put(`/ai-architect/conversations/${convId}/messages/${messageId}`, { message });
+  return response.data;
+};
+
+export const getAWSConnection = async () => {
+  const response = await apiClient.get('/aws-connection');
+  return response.data;
+};
+
+export const setupAWSConnection = async (roleArn, region = 'ap-south-1') => {
+  const response = await apiClient.post('/aws-connection/setup', {
+    role_arn: roleArn,
+    region,
+  });
+  return response.data;
+};
+
+export const verifyAWSConnection = async () => {
+  const response = await apiClient.post('/aws-connection/verify');
+  return response.data;
+};
+
+export const deleteAWSConnection = async () => {
+  await apiClient.delete('/aws-connection');
+};
+
+export const previewTerraformDeployment = async (terraformCode, region = 'ap-south-1') => {
+  const response = await apiClient.post('/deployments/preview', {
+    terraform_code: terraformCode,
+    region,
+  });
+  return response.data;
+};
+
+export const approveTerraformDeployment = async (deploymentId) => {
+  const response = await apiClient.post(`/deployments/${deploymentId}/approve`, {
+    confirmation: 'LAUNCH',
+  });
+  return response.data;
+};
+
+export const getTerraformDeployment = async (deploymentId) => {
+  const response = await apiClient.get(`/deployments/${deploymentId}`);
+  return response.data;
+};
+
+export const getTerraformDeployments = async () => {
+  const response = await apiClient.get('/deployments');
+  return response.data;
+};
