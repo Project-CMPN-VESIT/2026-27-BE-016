@@ -9,8 +9,7 @@ The following project documents are available in this repository:
 - [Semester VII Report](./SEM%20VII%20REPORT.pdf)
 - [Reseach Methodology PPT](./Capstone%20Project%20Sem%206%20PPT.pdf)
 - [Capstone project PPT](./Research%20Methodology%20Review.pdf)
-
-
-## Demo
-
-[Watch the project demo on Google Drive](https://drive.google.com/file/d/135yi-1-oqn24I5IpGFindn2OjHdlB5gT/view?usp=sharing).
+- [Acceptance Proof](./Acceptance.pdf)
+- [Watch the project demo on Google Drive](https://drive.google.com/file/d/135yi-1-oqn24I5IpGFindn2OjHdlB5gT/view?usp=sharing)
+- [GitHub with commit history](https://github.com/priyanka-ochaney13/systemarcht)
+- [Logbook] TBA
